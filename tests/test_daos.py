@@ -1,5 +1,7 @@
+from datetime import datetime
 from src.adapters.metrics import Metrics, Metric
 from src.adapters.modules import Modules, Module
+from src.adapters.iterations import Dataset, Loader, Iteration, Iterations
 
 def test_metrics(metrics: Metrics):
     metrics.add(Metric(name='accuracy', value=0.9, batch=100, epoch=1, phase='train'))
@@ -38,3 +40,61 @@ def test_modules(modules: Modules):
     module = modules.build(type='optimizer', hash='hash1', name='Adam', epoch=1, arguments={'lr': 0.1})
     assert module.owner is not None
 
+def test_iterations(iterations: Iterations):
+    iterations.put(Iteration.model_validate({
+        'hash': "1234",
+        'epochs': 5,
+        'loaders': [
+            ('train', {
+                'dataset': {'hash': "1234", 'name': "MNIST", 'arguments': {'train': True}},
+                'arguments': {'batch_size': 64}
+            }),
+            ('test', {
+                'dataset': {'hash': "1235", 'name': "MNIST", 'arguments': {'test': True}},
+                'arguments': {'batch_size': 64}
+            })
+        ],
+        'start': datetime.now(),
+        'end': datetime.now()
+    }))
+
+
+    iterations.put(Iteration.model_validate({
+        'hash': "1234",
+        'epochs': 10,
+        'loaders': [
+            ('train', {
+                'dataset': {'hash': "1234", 'name': "MNIST", 'arguments': {'train': True}},
+                'arguments': {'batch_size': 64}
+            }),
+            ('test', {
+                'dataset': {'hash': "1235", 'name': "MNIST", 'arguments': {'test': True}},
+                'arguments': {'batch_size': 64}
+            })
+        ],
+        'start': datetime.now(),
+        'end': datetime.now()
+    }))
+
+    assert len(iterations.list()) == 1
+    
+    iterations.put(Iteration.model_validate({
+        'hash': "12345",
+        'epochs': 10,
+        'loaders': [
+            ('train', {
+                'dataset': {'hash': "1234", 'name': "MNIST", 'arguments': {'train': True}},
+                'arguments': {'batch_size': 64}
+            }),
+            ('test', {
+                'dataset': {'hash': "1235", 'name': "MNIST", 'arguments': {'test': True}},
+                'arguments': {'batch_size': 64}
+            })
+        ],
+        'start': datetime.now(),
+        'end': datetime.now()
+    }))
+
+    assert len(iterations.list()) == 2
+
+    assert isinstance(iterations.list()[0], Iteration)

@@ -5,6 +5,7 @@ from logging import getLogger
 from tinydb import TinyDB
 from src.adapters.metrics import Metrics
 from src.adapters.modules import Modules
+from src.adapters.iterations import Iterations
 
 logger = getLogger(__name__)
 
@@ -26,3 +27,9 @@ def metrics(database):
 @fixture(scope='function')
 def modules(database):
     return Modules(database, 'test_model')
+
+@fixture(scope='function')
+def iterations(database):
+    return Iterations(database, 'test_model')
+
+

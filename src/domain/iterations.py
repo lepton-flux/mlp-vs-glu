@@ -16,8 +16,8 @@ class Iteration(Protocol):
     hash: str
     epochs: int
     loaders: list[tuple[str, Loader]]
-    started: datetime
-    finished: datetime
+    start: datetime
+    end: datetime
 
 class Iterations(ABC):
     
