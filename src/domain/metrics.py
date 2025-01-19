@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from typing import Protocol
 
-@dataclass
-class Metric:
+class Metric(Protocol):
     name: str
     value: float
     phase: str
@@ -10,6 +9,9 @@ class Metric:
     batch: int
 
 class Metrics(ABC):
+
+    @abstractmethod
+    def build(self, **kwargs) -> Metric:...
 
     @abstractmethod
     def add(self, metric: Metric):...
